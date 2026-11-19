@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+tests/__shots__/
+reference/
+.pnpm-store/
+contact-*.jpg
+*-top.png
+clarity-heatmap.png
+*.tsbuildinfo
+debug.log

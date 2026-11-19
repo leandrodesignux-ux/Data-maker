@@ -1,0 +1,15 @@
+[data-app="ga4"] {
+  /* screencapture-analytics-google-analytics-web-2026-06-03-13_19_00.png:
+     pixels (0,0), (100,300), (360,300), (80,400). */
+  --ga-info: #e8f0fe;
+  --ga-nav: #f8f9fa;
+  --ga-surface: #ffffff;
+  --ga-selected: #e8f0fe;
+  --ga-text: #202124;
+  --ga-muted: #5f6368;
+  --ga-border: #dadce0;
+  --ga-blue: #1a73e8;
+  color: var(--ga-text);
+  background: var(--ga-nav);
+  font-family: var(--font-roboto), Arial, sans-serif;
+}

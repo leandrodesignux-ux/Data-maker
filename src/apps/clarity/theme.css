@@ -1,0 +1,24 @@
+[data-app="clarity"] {
+  /* Vista General.png: (0,110) canvas #eff6fc, (300,200) card #ffffff,
+     (110,130) blue #0d7bd8, (20,120) gradient accent #9692ff,
+     (300,218) navy #020057, (308,550) magenta #ed36ff,
+     (640,550) purple #837eff, (1280,1545) green #008a00.
+     segmentos1.PNG: (20,20) lavender #8a90fb, (110,130) selected #eaeaff. */
+  --cl-surface: #ffffff;
+  --cl-canvas: #eff6fc;
+  --cl-lavender: #8a90fb;
+  --cl-text: #092950;
+  --cl-muted: #526273;
+  --cl-border: #dce5f6;
+  --cl-blue: #0875dd;
+  --cl-blue-sampled: #0d7bd8;
+  --cl-selected: #eaeaff;
+  --cl-gradient-start: #9692ff;
+  --cl-navy: #020057;
+  --cl-magenta: #ed36ff;
+  --cl-purple: #837eff;
+  --cl-success: #008a00;
+  color: var(--cl-text);
+  background: var(--cl-canvas);
+  font-family: "Segoe UI", "Selawik", system-ui, sans-serif;
+}

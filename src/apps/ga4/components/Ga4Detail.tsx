@@ -1,0 +1,34 @@
+"use client";
+import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
+import { ChevronDown, Search } from "lucide-react";
+import type { EChartsOption } from "echarts";
+import type { Dataset } from "@/data/model";
+import { ga4EchartsTheme } from "../echarts-theme";
+import { ensureGaWorldMap } from "../world-map";
+import { gaDecimal, gaEventBreakdown, gaEventDetail, gaNumber, gaPercent, gaSeries, gaSessions, type GaDimension, type GaFilters } from "../ga4-data";
+import { gaDimensionNames } from "./Ga4Controls";
+const ReactECharts = dynamic(() => import("echarts-for-react"), { ssr: false });
+ensureGaWorldMap();
+const blue = "#1a73e8";
+const baseChart = { animationDuration: 250, grid: { left: 22, right: 44, top: 24, bottom: 35, containLabel: true }, tooltip: { trigger: "axis" as const }, xAxis: { type: "category" as const, axisTick: { show: false }, axisLine: { lineStyle: { color: "#dadce0" } }, axisLabel: { color: "#5f6368" } }, yAxis: { type: "value" as const, position: "right" as const, splitLine: { lineStyle: { color: "#e8eaed" } }, axisLabel: { color: "#5f6368" } } };
+export function Ga4Detail({ dataset, filters, eventName, update }: { dataset: Dataset; filters: GaFilters; eventName: string; update: (patch: Partial<GaFilters>) => void }) {
+  const dimension = (filters.secondary || "device") as GaDimension;
+  const [search, setSearch] = useState("");
+  const detail = useMemo(() => gaEventDetail(dataset, filters, eventName), [dataset, filters, eventName]);
+  const series = useMemo(() => gaSeries(dataset, filters, "events", [eventName]), [dataset, filters, eventName]);
+  const breakdown = useMemo(() => gaEventBreakdown(dataset, filters, eventName, dimension).filter(row => row.key.toLowerCase().includes(search.toLowerCase())), [dataset, filters, eventName, dimension, search]);
+  const prior = filters.comparePeriod ? gaSeries(dataset, filters, "events", [eventName], "all", true) : null;
+  const lineOption: EChartsOption = { ...baseChart, tooltip: { trigger: "axis", valueFormatter: value => gaNumber(Number(value)) }, xAxis: { ...baseChart.xAxis, data: series.periods.map(day => day.slice(5)) }, series: [{ type: "line", name: eventName, symbol: "none", smooth: .12, data: series.byKey[eventName], lineStyle: { color: blue, width: 2 }, areaStyle: { color: "#d6e8fb", opacity: .8 } }, ...(prior ? [{ type: "line" as const, name: "Periodo anterior", symbol: "none" as const, data: prior.byKey[eventName], lineStyle: { color: "#7d8a96", type: "dashed" as const } }] : [])] };
+  const mapOption: EChartsOption = { tooltip: { formatter: (params: unknown) => { const item = params as { name: string; value: number }; return `${item.name}: ${gaNumber(item.value || 0)}`; } }, visualMap: { min: 0, max: Math.max(...detail.countries.map(row => row.count), 1), show: false, inRange: { color: ["#eef4fd", "#8bb8f8", "#1a73e8"] } }, series: [{ type: "map", map: "ga-training-world", roam: false, zoom: 1.35, itemStyle: { borderColor: "#fff", borderWidth: 1, areaColor: "#e8eef5" }, emphasis: { itemStyle: { areaColor: "#a9c9f3" } }, data: detail.countries.map(row => ({ name: row.name === "México" ? "México" : row.name, value: row.count })) }] };
+  const donutOption: EChartsOption = { animation: false, tooltip: { trigger: "item", formatter: "{b}: {c}" }, color: [blue, "#9fc3ef"], legend: { bottom: 2 }, series: [{ type: "pie", radius: ["54%", "75%"], center: ["50%", "43%"], label: { show: false }, data: [{ name: "Mujer", value: detail.female }, { name: "Hombre", value: detail.male }] }] };
+  const perSession = gaSessions(dataset, filters).reduce((sum, session) => sum + session.events.filter(event => event.name === eventName).length, 0) / Math.max(1, gaSessions(dataset, filters).length);
+  return <div className="ga-detail-grid">
+    <section className="ga-detail-card ga-detail-wide"><div className="ga-card-heading"><h2>Número de eventos a lo largo del tiempo</h2><button title="No disponible en el simulador"><ChevronDown size={17}/></button></div><div className="ga-detail-kpis"><div><span>Número de eventos</span><strong>{gaNumber(detail.events)}</strong></div><div><span>Total de usuarios</span><strong>{gaNumber(detail.users)}</strong></div><div><span>Eventos por usuario activo</span><strong>{gaDecimal(detail.eventsPerUser)}</strong></div></div><div className="ga-detail-line"><ReactECharts option={lineOption} theme={ga4EchartsTheme} style={{ height: "100%" }}/></div></section>
+    <section className="ga-detail-card ga-detail-live"><h2>En los últimos 30 minutos</h2><strong>{gaNumber(Math.round(detail.events / 28 / 48))}</strong><span>Eventos</span><div className="ga-live-bars">{Array.from({ length: 30 }, (_, index) => <i key={index} style={{ height: `${18 + ((index * 37 + detail.events) % 70)}%` }}/>)}</div><h3>Países principales</h3>{detail.countries.slice(0, 3).map(row => <div className="ga-mini-row" key={row.name}><span>{row.name}</span><b>{gaNumber(row.count)}</b></div>)}</section>
+    <section className="ga-detail-card"><h2>Número de eventos por País</h2><div className="ga-world-map"><ReactECharts option={mapOption} style={{ height: "100%" }}/></div>{detail.countries.slice(0, 4).map(row => <div className="ga-mini-row" key={row.name}><span>{row.name}</span><b>{gaNumber(row.count)}</b></div>)}</section>
+    <section className="ga-detail-card"><h2>Número de eventos por Sexo</h2><div className="ga-donut"><ReactECharts option={donutOption} style={{ height: "100%" }}/></div><div className="ga-mini-row"><span>Mujer</span><b>{gaPercent(detail.female / Math.max(1, detail.sessions.length))}</b></div><div className="ga-mini-row"><span>Hombre</span><b>{gaPercent(detail.male / Math.max(1, detail.sessions.length))}</b></div></section>
+    <section className="ga-detail-card"><h2>Eventos por sesión</h2><strong className="ga-session-metric">{gaDecimal(perSession)}</strong><p>Media del periodo seleccionado</p></section>
+    <section className="ga-detail-card ga-detail-parameters"><h2>Parámetros del evento</h2><div className="ga-parameter-controls"><label>Dimensión <select aria-label="Dimensión secundaria del evento" value={dimension} onChange={event => update({ secondary: event.target.value as GaDimension })}><option value="browser">Navegador</option><option value="os">Sistema operativo</option><option value="device">Categoría de dispositivo</option><option value="channel">Grupo de canales</option><option value="city">Ciudad</option></select></label><div><Search size={16}/><input placeholder="Buscar" value={search} onChange={event => setSearch(event.target.value)}/></div></div><table><thead><tr><th>{gaDimensionNames[dimension]}</th><th>Número de eventos</th><th>Total de usuarios</th><th>Eventos por usuario</th></tr></thead><tbody>{breakdown.map(row => <tr key={row.key}><td>{row.key}</td><td>{gaNumber(row.events)}</td><td>{gaNumber(row.users)}</td><td>{gaDecimal(row.eventsPerUser)}</td></tr>)}</tbody></table></section>
+  </div>;
+}

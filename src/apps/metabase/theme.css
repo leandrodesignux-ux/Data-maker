@@ -1,0 +1,15 @@
+[data-app="metabase"] {
+  /* META FULL PICTURE BP.png, pixels (0,0), (100,150), (440,310). */
+  --mb-canvas: #051119;
+  --mb-surface: #071722;
+  /* META FULL PICTURE BP.png, sampled at filter/card edges. */
+  --mb-border: #354856;
+  --mb-text: #f2f3f4;
+  --mb-muted: #aebcc6;
+  --mb-blue: #4da3e6;
+  --mb-green: #69be28;
+  --mb-red: #f34d53;
+  color: var(--mb-text);
+  background: var(--mb-canvas);
+  font-family: var(--font-lato), Arial, sans-serif;
+}
