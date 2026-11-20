@@ -22,7 +22,7 @@ function heatHref(filters: ClFilters, patch: Partial<ClFilters>) {
 function RecordIcon() { return <Unavailable><button aria-label="Ver grabaciones"><Video size={15}/></button></Unavailable>; }
 function HeatIcon({ onClick }: { onClick: () => void }) { return <button title="Ver mapa térmico" aria-label="Ver mapa térmico" onClick={onClick}><Flame size={16}/></button>; }
 function ClCard({ title, children, id, onDrop, onDragStart, className = "" }: { title: string; children: React.ReactNode; id: string; onDrop: (id: string) => void; onDragStart: (id: string) => void; className?: string }) {
-  return <section className={`cl-data-card ${className}`} draggable onDragStart={() => onDragStart(id)} onDragOver={event => event.preventDefault()} onDrop={() => onDrop(id)}><div className="cl-data-card-heading"><GripVertical size={13}/><strong>{title}</strong><span className="cl-card-actions"><Info size={13}/></span></div>{children}</section>;
+  return <section data-guide={id === "errors" ? "cl-card-js-errors" : `cl-card-${id}`} className={`cl-data-card ${className}`} draggable onDragStart={() => onDragStart(id)} onDragOver={event => event.preventDefault()} onDrop={() => onDrop(id)}><div className="cl-data-card-heading"><GripVertical size={13}/><strong>{title}</strong><span className="cl-card-actions"><Info size={13}/></span></div>{children}</section>;
 }
 export function ClarityPanel({ dataset, filters }: { dataset: Dataset; filters: ClFilters }) {
   const router = useRouter();

@@ -1,0 +1,12 @@
+.guide-cutout { position: fixed; z-index: var(--layer-guide-overlay); border-radius: 8px; box-shadow: 0 0 0 9999px rgba(6, 20, 18, .55); pointer-events: none; transition: left 180ms ease, top 180ms ease, width 180ms ease, height 180ms ease; }
+.guide-veil { position: fixed; inset: 0; z-index: var(--layer-guide-overlay); background: rgba(6, 20, 18, .55); pointer-events: none; }
+.guide-ring { position: fixed; z-index: var(--layer-guide-ring); border: 2px solid #4baf83; border-radius: 8px; pointer-events: none; box-shadow: 0 0 0 3px #4baf8340; animation: guide-pulse 2.2s ease-in-out infinite; transition: left 180ms ease, top 180ms ease, width 180ms ease, height 180ms ease; }
+.guide-bubble { position: fixed; z-index: var(--layer-guide-ring); box-sizing: border-box; padding: 14px 16px; border: 1px solid #b8d9c5; border-radius: 12px; background: #fff; color: #20322e; box-shadow: 0 12px 32px #0b241b38; font: 13px/1.4 Arial, sans-serif; pointer-events: none; }
+.guide-bubble::before { content: ""; position: absolute; top: -7px; left: 22px; width: 12px; height: 12px; transform: rotate(45deg); background: #fff; border-left: 1px solid #b8d9c5; border-top: 1px solid #b8d9c5; }
+.guide-bubble-kicker { color: #217556; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.guide-bubble p { margin: 7px 0 12px; font-weight: 600; }
+.guide-bubble-actions { display: flex; justify-content: space-between; gap: 8px; }
+.guide-bubble-actions button { border: 0; background: transparent; color: #48675a; font: inherit; cursor: pointer; padding: 5px 3px; pointer-events: auto; }
+.guide-bubble-actions .guide-primary { background: #207a58; color: white; border-radius: 6px; font-weight: 700; padding: 5px 11px; }
+@keyframes guide-pulse { 50% { box-shadow: 0 0 0 7px #4baf8321; } }
+@media (prefers-reduced-motion: reduce) { .guide-ring { animation: none; transition: none; }.guide-cutout { transition: none; } }

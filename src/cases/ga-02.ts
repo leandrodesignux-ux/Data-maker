@@ -6,9 +6,9 @@ export const ga02 = defineCase({
   question: "¿Qué canal y campaña explican el aumento sin interacción útil?",
   startRoute: "/ga4/informes/adquisicion-trafico?case=GA-02&datePreset=month&comparePeriod=true&dimension=channel",
   objectives: [
-    { id: "traffic", kind: "acknowledge", step: "Abre Adquisición de tráfico y compara con el periodo anterior.", detector: { path: "/ga4/informes/adquisicion-trafico", filters: { comparePeriod: true } } },
-    { id: "campaign", kind: "action", step: "Cambia la dimensión principal a Campaña de la sesión.", detector: { path: "/ga4/informes/adquisicion-trafico", filters: { dimension: "campaign" } } },
-    { id: "social", kind: "action", step: "Filtra Paid Social para contrastar su calidad.", detector: { path: "/ga4/informes/adquisicion-trafico", includes: { conditions: "Paid Social" } } },
+    { id: "traffic", kind: "acknowledge", guide: [{"target":"[data-guide=\"ga-date\"]","text":"Revisa la comparación de fechas. Después pulsa Entendido.","placement":"top"}], step: "Abre Adquisición de tráfico y compara con el periodo anterior.", detector: { path: "/ga4/informes/adquisicion-trafico", filters: { comparePeriod: true } } },
+    { id: "campaign", kind: "action", guide: [{"target":"[data-guide=\"ga-primary-dimension\"]","text":"Cambia la dimensión principal a Campaña de la sesión.","value":"campaign"}], step: "Cambia la dimensión principal a Campaña de la sesión.", detector: { path: "/ga4/informes/adquisicion-trafico", filters: { dimension: "campaign" } } },
+    { id: "social", kind: "action", guide: [{"target":"[data-guide=\"ga-add-filter\"]","text":"Abre Añadir filtro."},{"target":"[data-guide=\"ga-filter-add-condition\"]","text":"Añade una condición.","afterOpen":true},{"target":"[data-guide=\"ga-filter-dimension\"]","text":"Selecciona Grupo de canales.","afterOpen":true,"value":"channel"},{"target":"[data-guide=\"ga-filter-value\"]","text":"Escribe Paid Social.","afterOpen":true,"value":"Paid Social"},{"target":"[data-guide=\"ga-filter-apply\"]","text":"Aplica el filtro.","afterOpen":true}], step: "Filtra Paid Social para contrastar su calidad.", detector: { path: "/ga4/informes/adquisicion-trafico", includes: { conditions: "Paid Social" } } },
   ],
   hints: ["El total de sesiones no indica intención.", "Cambia de grupo de canales a campaña y revisa tasa de interacción y tiempo.", `La campaña ficticia ${CAMPAIGNS.socialAwareness} concentra sesiones cortas de Paid Social.`],
   quiz: [

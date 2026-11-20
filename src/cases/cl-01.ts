@@ -5,9 +5,9 @@ export const cl01 = defineCase({
   question: "¿En qué elementos se concentran los clics fallidos y qué expectativa del usuario se incumple?",
   startRoute: "/clarity/panel?case=CL-01&url=%2Fspots%2F&urlOperator=contains&sector=Bodegas&datePreset=30d",
   objectives: [
-    { id: "spot", kind: "acknowledge", step: "Filtra las fichas con URL visitada que contiene /spots/.", detector: { filters: { url: "/spots/" } } },
-    { id: "map", kind: "action", step: "Abre el mapa térmico de Clic para la ficha.", detector: { path: "/clarity/mapas-termicos", filters: { mode: "click" } } },
-    { id: "dead", kind: "action", step: "Muestra solo los clics fallidos y revisa la galería.", detector: { path: "/clarity/mapas-termicos", filters: { clickKind: "dead" } } },
+    { id: "spot", kind: "acknowledge", guide: [{"target":"[data-guide=\"cl-chip-url\"]","text":"Revisa Dirección URL visitada. Después pulsa Entendido."}], step: "Filtra las fichas con URL visitada que contiene /spots/.", detector: { filters: { url: "/spots/" } } },
+    { id: "map", kind: "action", guide: [{"target":"[data-guide=\"cl-nav-heatmaps\"]","text":"Abre Mapas Térmicos.","doneWhen":{"path":"/clarity/mapas-termicos"}},{"target":"[data-guide=\"cl-mode-click\"]","text":"Selecciona Clic."}], step: "Abre el mapa térmico de Clic para la ficha.", detector: { path: "/clarity/mapas-termicos", filters: { mode: "click" } } },
+    { id: "dead", kind: "action", guide: [{"target":"[data-guide=\"cl-click-kind\"]","text":"En Mostrar, elige Solo clics fallidos.","value":"dead"}], evidence: {"target":"[data-guide=\"cl-click-list\"]","text":"Revisa qué elementos acumulan clics fallidos."}, step: "Muestra solo los clics fallidos y revisa la galería.", detector: { path: "/clarity/mapas-termicos", filters: { clickKind: "dead" } } },
   ],
   hints: ["Empieza en Ideas → Clics fallidos y limita las URL a fichas.", "En Mapas térmicos, el selector Mostrar separa todos los clics de los fallidos.", "La foto principal y las miniaturas acumulan intentos sin respuesta."],
   quiz: [

@@ -3,7 +3,7 @@ import { caseById } from "../src/cases/registry";
 
 test("GA-01 can be diagnosed through the funnel device breakdown", async ({ page }) => {
   await page.goto("/ga4/explorar/embudo?case=GA-01");
-  await page.locator(".ga-funnel-table tbody tr").first().waitFor({ timeout: 60000 });
+  await expect(page.locator(".ga-funnel-table tbody tr")).toHaveCount(2, { timeout: 60000 });
   await expect(page.locator(".ga-funnel-table")).not.toContainText("desktop");
   await page.getByLabel("Desglose del embudo").selectOption("device");
   await expect(page.locator(".ga-funnel-table")).toContainText("desktop");

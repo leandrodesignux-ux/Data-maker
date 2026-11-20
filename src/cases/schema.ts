@@ -7,7 +7,20 @@ export const detectorSchema = z.object({
   query: z.record(z.string(), scalar).optional(),
   includes: z.record(z.string(), z.string()).optional(),
 }).refine(value => value.path || value.filters || value.query || value.includes, "El detector necesita una condición");
-export const objectiveSchema = z.object({ id: z.string().min(1), kind: z.enum(["action", "acknowledge"]), step: z.string().min(1), detector: detectorSchema });
+const guideTarget = z.string().regex(/^\[data-guide="[a-zA-Z0-9-]+"\]$/, "El target debe ser un selector [data-guide=...]");
+export const guideStepSchema = z.object({
+  target: guideTarget,
+  text: z.string().min(1).max(100),
+  placement: z.enum(["top", "bottom", "left", "right"]).optional(),
+  doneWhen: detectorSchema.optional(),
+  afterOpen: z.boolean().optional(),
+  value: z.string().optional(),
+});
+export const objectiveSchema = z.object({
+  id: z.string().min(1), kind: z.enum(["action", "acknowledge"]), step: z.string().min(1), detector: detectorSchema,
+  guide: z.array(guideStepSchema).min(1),
+  evidence: z.object({ target: guideTarget, text: z.string().min(1).max(100) }).optional(),
+});
 export const quizSchema = z.discriminatedUnion("kind", [
   z.object({ id: z.string().min(1), kind: z.literal("multiple"), question: z.string().min(1), options: z.array(z.string()).min(2), answer: z.number().int().nonnegative(), explanation: z.string().min(1) }).refine(q => q.answer < q.options.length),
   z.object({ id: z.string().min(1), kind: z.literal("number"), question: z.string().min(1), answer: z.number(), tolerance: z.number().nonnegative(), unit: z.string().optional(), explanation: z.string().min(1) }),
