@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { caseById } from "../src/cases/registry";
 
 test("Metabase filters, tabs and chart actions work with synthetic data", async ({ page }) => {
   await page.goto("/metabase/dashboard/growth-full-picture");
@@ -34,7 +35,7 @@ test("Metabase filters, tabs and chart actions work with synthetic data", async 
 
 for (const id of ["MB-01", "MB-02", "MB-03"]) {
   test(`${id} opens a symptom view`, async ({ page }) => {
-    await page.goto(`/metabase/dashboard/growth-full-picture?case=${id}`);
+    await page.goto(caseById[id].startRoute);
     await expect(page.locator(".mb-kpi-value").first()).toBeVisible({ timeout: 30000 });
     await expect(page).toHaveURL(/datePreset=custom/);
   });

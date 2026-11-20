@@ -6,9 +6,9 @@ export const ga02 = defineCase({
   question: "¿Qué canal y campaña explican el aumento sin interacción útil?",
   startRoute: "/ga4/informes/adquisicion-trafico?case=GA-02&datePreset=month&comparePeriod=true&dimension=channel",
   objectives: [
-    { id: "traffic", step: "Abre Adquisición de tráfico y compara con el periodo anterior.", detector: { path: "/ga4/informes/adquisicion-trafico", filters: { comparePeriod: true } } },
-    { id: "campaign", step: "Cambia la dimensión principal a Campaña de la sesión.", detector: { path: "/ga4/informes/adquisicion-trafico", filters: { dimension: "campaign" } } },
-    { id: "social", step: "Filtra Paid Social para contrastar su calidad.", detector: { path: "/ga4/informes/adquisicion-trafico", includes: { conditions: "Paid Social" } } },
+    { id: "traffic", kind: "acknowledge", step: "Abre Adquisición de tráfico y compara con el periodo anterior.", detector: { path: "/ga4/informes/adquisicion-trafico", filters: { comparePeriod: true } } },
+    { id: "campaign", kind: "action", step: "Cambia la dimensión principal a Campaña de la sesión.", detector: { path: "/ga4/informes/adquisicion-trafico", filters: { dimension: "campaign" } } },
+    { id: "social", kind: "action", step: "Filtra Paid Social para contrastar su calidad.", detector: { path: "/ga4/informes/adquisicion-trafico", includes: { conditions: "Paid Social" } } },
   ],
   hints: ["El total de sesiones no indica intención.", "Cambia de grupo de canales a campaña y revisa tasa de interacción y tiempo.", `La campaña ficticia ${CAMPAIGNS.socialAwareness} concentra sesiones cortas de Paid Social.`],
   quiz: [

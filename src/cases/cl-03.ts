@@ -5,9 +5,9 @@ export const cl03 = defineCase({
   question: "¿Dónde falla el autocompletado y cómo se relaciona con los errores JavaScript?",
   startRoute: "/clarity/panel?case=CL-03&sector=Locales+comerciales&device=mobile&page=%2F&datePreset=30d",
   objectives: [
-    { id: "safari", step: "Filtra Explorador = Safari en móvil.", detector: { filters: { device: "mobile", browser: "Safari" } } },
-    { id: "rage", step: "Abre el mapa de Clic y muestra solo clics continuos.", detector: { path: "/clarity/mapas-termicos", filters: { clickKind: "rage", browser: "Safari", device: "mobile" } } },
-    { id: "errors", step: "Vuelve al Panel y contrasta la tarjeta Errores de JavaScript.", detector: { path: "/clarity/panel", filters: { behavior: "jsError", browser: "Safari", device: "mobile" } } },
+    { id: "safari", kind: "action", step: "Filtra Explorador = Safari en móvil.", detector: { filters: { device: "mobile", browser: "Safari" } } },
+    { id: "rage", kind: "action", step: "Abre el mapa de Clic y muestra solo clics continuos.", detector: { path: "/clarity/mapas-termicos", filters: { clickKind: "rage", browser: "Safari", device: "mobile" } } },
+    { id: "errors", kind: "action", step: "Aplica Errores de JavaScript y contrasta la tarjeta con el mapa.", detector: { filters: { behavior: "jsError", browser: "Safari", device: "mobile" } } },
   ],
   hints: ["Aísla móvil antes de mirar el mapa de calor.", "Filtra Safari y muestra únicamente clics continuos.", "El campo Buscar una ubicación concentra intentos repetidos y el mismo segmento tiene errores JS."],
   quiz: [

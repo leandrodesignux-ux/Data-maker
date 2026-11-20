@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 
 describe("project base", () => {
   it("keeps the source screenshots outside Git tracking", () => {
-    expect(existsSync(join(process.cwd(), "reference", "metabase"))).toBe(true);
-    expect(existsSync(join(process.cwd(), "reference", "ga4"))).toBe(true);
-    expect(existsSync(join(process.cwd(), "reference", "clarity"))).toBe(true);
+    const ignore = readFileSync(join(process.cwd(), ".gitignore"), "utf8");
+    expect(ignore.split(/\r?\n/).some(line => line.trim() === "reference/" || line.trim() === "/reference/")).toBe(true);
+    expect(execFileSync("git", ["ls-files", "--", "reference/"], { encoding: "utf8" }).trim()).toBe("");
   });
 });

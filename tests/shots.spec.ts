@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
+import { caseById } from "../src/cases/registry";
 
 const routes = [
   ["hub", "/"],
@@ -14,9 +15,9 @@ const routes = [
   ["clarity-mapas", "/clarity/mapas-termicos"],
   ["clarity-scroll", "/clarity/mapas-termicos?mode=scroll&device=desktop&sector=Oficinas&url=%2Fspots%2F"],
   ["clarity-compare", "/clarity/mapas-termicos?mode=scroll&device=desktop&sector=Oficinas&url=%2Fspots%2F&compare=true&compareDevice=mobile"],
-  ["case-mb", "/metabase/dashboard/growth-full-picture?case=MB-01"],
-  ["case-ga", "/ga4/explorar/embudo?case=GA-01"],
-  ["case-cl", "/clarity/panel?case=CL-01"],
+  ["case-mb", caseById["MB-01"].startRoute],
+  ["case-ga", caseById["GA-01"].startRoute],
+  ["case-cl", caseById["CL-01"].startRoute],
 ] as const;
 
 for (const [name, route] of routes) {

@@ -21,6 +21,9 @@ describe("GA4 discoveries from report controls", () => {
     const result = gaFunnel(dataset, filters, defaultGaSteps, "device", false);
     const mobile = result.rows.find(row => row.key === "mobile")!, desktop = result.rows.find(row => row.key === "desktop")!;
     const mobileRate = mobile.counts[3] / mobile.counts[2], desktopRate = desktop.counts[3] / desktop.counts[2];
+    const cardToDetailAbandonment = 1 - result.total[2] / result.total[1];
+    expect(cardToDetailAbandonment).toBeGreaterThan(0.02);
+    expect(cardToDetailAbandonment).toBeLessThan(0.06);
     console.log("GA4 GA-01 funnel", { mobileRate, desktopRate, totalRate: result.total[3] / result.total[2] });
     expect(desktopRate).toBeLessThan(0.02);
     expect(mobileRate).toBeGreaterThan(0.09);

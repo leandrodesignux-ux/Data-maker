@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { caseById } from "../src/cases/registry";
 
 test("CL-01 filters spot sessions and reveals failed clicks on the gallery", async ({ page }) => {
-  await page.goto("/clarity/panel?case=CL-01");
+  await page.goto(caseById["CL-01"].startRoute);
   await page.locator(".cl-idea").first().waitFor({ timeout: 60000 });
   await expect(page.locator(".cl-filters")).toContainText("Dirección URL visitada: /spots/");
   await page.locator(".cl-idea").filter({ hasText: "Clics fallidos" }).getByRole("button", { name: "Ver mapa térmico" }).click();
@@ -13,7 +14,7 @@ test("CL-01 filters spot sessions and reveals failed clicks on the gallery", asy
 });
 
 test("CL-02 compares desktop and mobile scroll reach", async ({ page }) => {
-  await page.goto("/clarity/mapas-termicos?case=CL-02");
+  await page.goto(caseById["CL-02"].startRoute.replace("/clarity/panel", "/clarity/mapas-termicos") + "&mode=scroll");
   await page.locator(".cl-scroll-reach").waitFor({ timeout: 60000 });
   await expect(page.locator(".cl-scroll-reach")).toContainText("75 %");
   await page.getByRole("button", { name: "Comparar" }).click();

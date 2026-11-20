@@ -11,7 +11,7 @@ export const mb02: Scenario = {
     const cutoff = dayAt(120);
     const eligible = dataset.crm.filter(r => r.scenarioKey === "MB-02" && stageAtLeast(r, "project"));
     const scheduledIds = new Set<string>();
-    for (const [recent, probability] of [[false, 0.30], [true, 0.20]] as const) {
+    for (const [recent, probability] of [[false, 0.34], [true, 0.14]] as const) {
       const period = eligible.filter(r => (r.day >= cutoff) === recent).sort((a, b) => hash32(a.id, dataset.seed) - hash32(b.id, dataset.seed));
       for (const record of period.slice(0, Math.round(period.length * probability))) scheduledIds.add(record.id);
     }

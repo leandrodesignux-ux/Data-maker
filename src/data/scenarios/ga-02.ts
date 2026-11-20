@@ -22,7 +22,7 @@ export const ga02: Scenario = {
       lowerIntent(session, stableChance(session.id + ":engaged", 0.27, dataset.seed)); markTouched(session, "GA-02");
       const rows = byDay.get(session.day) ?? []; rows.push(session); byDay.set(session.day, rows);
     }
-    for (const [day, templates] of byDay) for (let i = 0; i < 10; i++) {
+    for (const [day, templates] of byDay) for (let i = 0; i < 11; i++) {
       const source = templates[i % templates.length];
       const id = `ga02-extra-${day}-${i}`;
       const extra: Session = { ...source, id, userId: `u-${id}`, isNewUser: true,

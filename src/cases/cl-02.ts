@@ -5,9 +5,9 @@ export const cl02 = defineCase({
   question: "¿Cuánta gente llega al contacto en PC y qué cambia frente a móvil?",
   startRoute: "/clarity/panel?case=CL-02&sector=Oficinas&channel=Organic+Search&url=%2Fspots%2F&device=desktop&datePreset=30d",
   objectives: [
-    { id: "desktop", step: "Revisa fichas de oficina en PC.", detector: { filters: { sector: "Oficinas", device: "desktop", url: "/spots/" } } },
-    { id: "scroll", step: "Abre Mapas térmicos → Desplazamiento.", detector: { path: "/clarity/mapas-termicos", filters: { mode: "scroll" } } },
-    { id: "compare", step: "Activa Comparar y selecciona Móvil.", detector: { path: "/clarity/mapas-termicos", filters: { mode: "scroll", compare: true, compareDevice: "mobile" } } },
+    { id: "desktop", kind: "acknowledge", step: "Revisa fichas de oficina en PC.", detector: { filters: { sector: "Oficinas", device: "desktop", url: "/spots/" } } },
+    { id: "scroll", kind: "action", step: "Abre Mapas térmicos → Desplazamiento.", detector: { path: "/clarity/mapas-termicos", filters: { mode: "scroll" } } },
+    { id: "compare", kind: "action", step: "Activa Comparar y selecciona Móvil.", detector: { path: "/clarity/mapas-termicos", filters: { mode: "scroll", compare: true, compareDevice: "mobile" } } },
   ],
   hints: ["El bloque de contacto está después de una descripción larga.", "Usa Desplazamiento y mira el alcance cercano al 75 % de la página.", "Compara PC con móvil; el contacto desktop no permanece visible durante la lectura."],
   quiz: [

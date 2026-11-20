@@ -9,6 +9,7 @@ import { getClientDataset } from "@/data/client";
 import { AppSwitcher } from "@/components/shared/AppSwitcher";
 import { SimulatorBadge } from "@/components/shared/SimulatorBadge";
 import { CaseDock } from "@/components/shared/CaseDock";
+import { AppPortalContainer } from "@/components/shared/AppPortalContainer";
 import { Ga4ReportBar } from "./Ga4Controls";
 import { Ga4Report, type GaReportKind } from "./Ga4Report";
 import { Ga4Detail } from "./Ga4Detail";
@@ -50,6 +51,7 @@ function Sidebar({ path }: { path: string }) {
     <button className="ga-side-group" onClick={() => toggle("search")}>{open.search ? <ChevronDown size={15}/> : <ChevronRight size={15}/>} Search Console</button>{open.search && item("Consultas", undefined, 1)}</div></aside>;
 }
 export function Ga4Chrome() {
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
   const path = usePathname(), router = useRouter(), searchParams = useSearchParams();
   const [query, setQuery] = useQueryStates(parsers, { history: "push", shallow: true });
   const filters: GaFilters = useMemo(() => ({ datePreset: query.datePreset, from: query.from, to: query.to, comparePeriod: query.comparePeriod, grain: query.grain as GaGrain, segmentDimension: query.segmentDimension as GaFilters["segmentDimension"], segmentValue: query.segmentValue, conditions: query.conditions, dimension: query.dimension as GaDimension, secondary: query.secondary as GaFilters["secondary"] }), [query]);
@@ -61,18 +63,12 @@ export function Ga4Chrome() {
   const update = (patch: Partial<GaFilters>) => { void setQuery(patch); setLoading(true); window.setTimeout(() => setLoading(false), 200); };
   useEffect(() => { getClientDataset().then(setDataset).catch(e => setError(String(e))); }, []);
   useEffect(() => { setFilters(filters); }, [filters, setFilters]);
-  useEffect(() => {
-    const caseId = searchParams.get("case");
-    if (caseId === "GA-01" && !searchParams.has("conditions")) void setQuery({ conditions: JSON.stringify([{ dimension: "channel", operator: "equals", value: "Organic Search" }, { dimension: "sector", operator: "equals", value: "Oficinas" }, { dimension: "entryPoint", operator: "equals", value: "Browse Page" }]), datePreset: "90d" });
-    if (caseId === "GA-02" && !searchParams.has("datePreset")) void setQuery({ datePreset: "month", dimension: "channel", comparePeriod: true });
-    if (caseId === "GA-03" && !searchParams.has("datePreset")) void setQuery({ datePreset: "90d" });
-  }, [searchParams, setQuery]);
   const suggestions = routes.filter(route => route.label.toLowerCase().includes(search.toLowerCase()));
   const caseHref = (href: string) => searchParams.get("case") ? `${href}?case=${encodeURIComponent(searchParams.get("case")!)}` : href;
-  return <div data-app="ga4" className="ga-app">
+  return <div data-app="ga4" className="ga-app" data-filters={JSON.stringify(filters)} data-query={JSON.stringify(query)} ref={setPortalContainer}><AppPortalContainer container={portalContainer}>
     {banner && <div className="ga-banner"><Info size={18}/><span>Los datos de esta propiedad se están estimando para tener en cuenta factores como el consentimiento de cookies.</span><button onClick={() => setBanner(false)}>Ignorar</button><button title="No disponible en el simulador">Más información</button></div>}
     <header className="ga-header"><Link href={caseHref("/ga4/informes/panoramico")} className="ga-brand"><span className="ga-brand-mark"><i/><i/><i/></span><span>Analytics</span></Link><div className="ga-property-wrap"><button className="ga-property" onClick={() => setPropertyOpen(!propertyOpen)}><small>Cuenta de entrenamiento</small><span>Marketplace Demo - GA4 <ChevronDown size={16}/></span></button>{propertyOpen && <div className="ga-property-pop"><strong>Cuenta de entrenamiento</strong><button onClick={() => setPropertyOpen(false)}>Marketplace Demo - GA4</button></div>}</div><div className="ga-search-wrap"><div className="ga-search"><Search size={20}/><input value={search} onFocus={() => setSearchFocus(true)} onBlur={() => window.setTimeout(() => setSearchFocus(false), 150)} onChange={event => setSearch(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && suggestions[0]) { router.push(caseHref(suggestions[0].href)); setSearchFocus(false); } }} placeholder="Pruebe a buscar informes o exploraciones" aria-label="Buscar informes"/>{search && <button onClick={() => setSearch("")} aria-label="Borrar búsqueda"><X size={16}/></button>}</div>{searchFocus && search && <div className="ga-search-results">{suggestions.length ? suggestions.map(route => <button key={route.href} onMouseDown={event => event.preventDefault()} onClick={() => { router.push(caseHref(route.href)); setSearchFocus(false); setSearch(""); }}><Search size={15}/>{route.label}</button>) : <span>Sin resultados</span>}</div>}</div><div className="ga-header-actions"><button title="No disponible en el simulador"><Grid2X2 size={20}/></button><button title="No disponible en el simulador"><CircleHelp size={20}/></button><span>D</span></div></header>
     <div className="ga-body"><Rail explore={explore}/>{explore ? <Ga4Exploration dataset={dataset} filters={filters} update={update} query={{ steps: query.steps, breakdown: query.breakdown, openFunnel: query.openFunnel, tab: query.tab }} setQuery={patch => { void setQuery(patch); }}/> : <><Sidebar path={path}/><main className="ga-report"><Ga4ReportBar filters={filters} update={update}/><div className="ga-title-line"><h1>{title}</h1><div><button title="No disponible en el simulador"><Menu size={19}/></button><button title="No disponible en el simulador"><SlidersHorizontal size={19}/></button><button title="No disponible en el simulador"><Share2 size={19}/></button></div></div><div className="ga-report-content">{error ? <div className="ga-error">{error}</div> : !dataset ? <div className="ga-skeleton"/> : <div className={loading ? "ga-content-loading" : ""}>{detail ? <Ga4Detail dataset={dataset} filters={filters} eventName={title} update={update}/> : <Ga4Report dataset={dataset} filters={filters} update={update} kind={kind} focusEvent={searchParams.get("case") === "GA-03" ? "clientRequestedWhatsappForm" : ""}/>}</div>}</div><footer className="ga-footer">© 2026 Google · Simulación de entrenamiento</footer></main></>}</div>
     <CaseDock/><AppSwitcher/><SimulatorBadge/>
-  </div>;
+  </AppPortalContainer></div>;
 }

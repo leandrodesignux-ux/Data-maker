@@ -47,7 +47,7 @@ function profileDimensions(key: Profile, random: () => number): { channel: Chann
     case "MB-02": Object.assign(result, { channel: "Direct", sector: "Naves industriales", entryPoint: "Browse Page", agentSource: "VIRTUAL" }); break;
     case "MB-03": Object.assign(result, { channel: "Direct", sector: "Locales comerciales", entryPoint: "Home" }); break;
     case "GA-01": Object.assign(result, { channel: "Organic Search", sector: "Oficinas", entryPoint: "Browse Page", device: random() < 0.58 ? "mobile" : "desktop" }); break;
-    case "GA-02": Object.assign(result, { channel: "Paid Social", sector: "Locales comerciales", entryPoint: "Browse Page", campaign: CAMPAIGNS.socialAwareness }); break;
+    case "GA-02": Object.assign(result, { channel: "Paid Social", sector: "Locales comerciales", entryPoint: "Home", campaign: CAMPAIGNS.socialAwareness }); break;
     case "GA-03": Object.assign(result, { channel: "Organic Search", sector: "Bodegas", entryPoint: "Spot Detail", device: "mobile", os: "iOS", browser: "Safari" }); break;
     case "CL-01": Object.assign(result, { channel: "Referral", sector: "Bodegas", entryPoint: "Spot Detail", device: "desktop" }); break;
     case "CL-02": Object.assign(result, { channel: "Organic Search", sector: "Oficinas", entryPoint: "Spot Detail", device: "desktop" }); break;
@@ -82,8 +82,8 @@ function createSession(index: number, day: string, key: Profile, random: () => n
     browser: dimensions.browser, os: dimensions.os, country: "México", city,
     landingPage, entryPoint: dimensions.entryPoint, sector: dimensions.sector,
     pageviews: [{ path: landingPage, enteredAt: startedAt, activeTimeSec: 0 }],
-    activeTimeSec: bot ? 1 + Math.floor(random() * 3) : 7 + Math.floor(random() * 120),
-    scrollDepthPct: bot ? 0 : 18 + Math.floor(random() * 82), events: [], interactions: [],
+    activeTimeSec: bot ? 1 + Math.floor(random() * 3) : random() < (dimensions.channel === "Paid Social" ? .85 : dimensions.device === "mobile" ? .83 : .80) ? 3 + Math.floor(random() * 7) : 12 + Math.floor(random() * 115),
+    scrollDepthPct: bot ? 0 : random() < (dimensions.device === "mobile" ? .15 : .09) ? 100 : 18 + Math.floor(random() * 82), events: [], interactions: [],
     isBot: bot, botType: bot ? "unclassified" : "none",
     flags: { rageClick: false, deadClick: false, excessiveScroll: false, quickBack: false, jsError: false },
     scenarioKey: key, touchedBy: [],
@@ -105,15 +105,17 @@ function createSession(index: number, day: string, key: Profile, random: () => n
     session.pageviews.push({ path: currentPage, enteredAt: eventAt(startedAt, 7), activeTimeSec: 0 });
     addEvent(session, "page_view", 7, currentPage);
   }
-  if ((dimensions.entryPoint === "Browse Page" || currentPage !== landingPage) && random() < 0.68) {
+  if ((dimensions.entryPoint === "Browse Page" || currentPage !== landingPage) && random() < 0.54) {
     session.activeTimeSec = Math.max(session.activeTimeSec, 18);
     if (random() < 0.16) { addEvent(session, "clientOpenedFilterPrice", 8, currentPage, "price-filter"); addEvent(session, "clientAppliedFilterPrice", 10, currentPage, "price-filter"); }
     addEvent(session, "clientClickedSpotCardBrowsePage", 12, currentPage, "spot-card");
     addInteraction(session, "spot-card", ".spot-card", currentPage, 0.46, 0.43, 12, "click");
-    currentPage = PAGES.spot; reachedSpot = true;
-    session.pageviews.push({ path: currentPage, enteredAt: eventAt(startedAt, 15), activeTimeSec: 0 });
-    addEvent(session, "page_view", 15, currentPage);
-    addEvent(session, "clientInAvailableSpotDetail", 16, currentPage);
+    if (random() < 0.96) {
+      currentPage = PAGES.spot; reachedSpot = true;
+      session.pageviews.push({ path: currentPage, enteredAt: eventAt(startedAt, 15), activeTimeSec: 0 });
+      addEvent(session, "page_view", 15, currentPage);
+      addEvent(session, "clientInAvailableSpotDetail", 16, currentPage);
+    }
   } else if (reachedSpot) addEvent(session, "clientInAvailableSpotDetail", 3, currentPage);
 
   if (reachedSpot && random() < 0.20) {
@@ -181,7 +183,7 @@ export function createBaseDataset(seed = DEFAULT_SEED): Dataset {
     const weekly = weekday === 0 ? 0.70 : weekday === 6 ? 0.77 : weekday === 5 ? 0.98 : 1.10;
     const trend = 0.95 + dayNumber / (HISTORY_DAYS - 1) * 0.10;
     const humanCount = Math.round(230 * weekly * trend * (0.94 + random() * 0.12));
-    const botCount = Math.round(65 * weekly * (0.95 + random() * 0.10));
+    const botCount = Math.round(75 * weekly * (0.95 + random() * 0.10));
     for (let i = 0; i < humanCount + botCount; i++) {
       const bot = i >= humanCount;
       const key = bot ? "MB-03" : profile(random);

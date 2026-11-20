@@ -77,7 +77,7 @@
 .ga-mini-row { display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid #eef0f1; gap: 12px; }.ga-mini-row a { color: #1a73e8; }
 .ga-footer { text-align: center; color: #8b9095; margin: 40px 0 0; font-size: 11px; }
 .ga-content-loading { opacity: .48; transition: opacity .2s; }.ga-skeleton { min-height: 500px; border-radius: 8px; background: linear-gradient(90deg,#f0f2f5,#fff,#f0f2f5); background-size: 200% 100%; animation: ga-loading 1.3s infinite; margin-top: 20px; } @keyframes ga-loading { to { background-position: -200% 0; } }
-.ga-pop,.ga-filter-dialog { z-index: 70; background: white; border: 1px solid #dadce0; border-radius: 7px; box-shadow: 0 12px 35px #20212430; color: #202124; padding: 17px; min-width: 260px; font-family: var(--font-roboto),Arial,sans-serif; font-size: 13px; }
+.ga-pop,.ga-filter-dialog { z-index: var(--layer-app-popover); background: white; border: 1px solid #dadce0; border-radius: 7px; box-shadow: 0 12px 35px #20212430; color: #202124; padding: 17px; min-width: 260px; font-family: var(--font-roboto),Arial,sans-serif; font-size: 13px; }
 .ga-pop h3 { margin: 0 0 14px; font-size: 16px; font-weight: 500; }.ga-pop p { color: #5f6368; }.ga-pop label { display: block; margin: 12px 0; color: #5f6368; }
 .ga-pop input,.ga-pop select,.ga-filter-dialog input,.ga-filter-dialog select { display: block; width: 100%; border: 1px solid #dadce0; border-radius: 4px; padding: 9px; background: #fff; color: #202124; margin-top: 5px; }
 .ga-pop-actions,.ga-dialog-actions { display: flex; justify-content: flex-end; gap: 12px; padding-top: 13px; }
@@ -85,7 +85,7 @@
 .ga-date-pop { width: 340px; }.ga-date-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }.ga-date-presets button { background: #fff; border: 0; padding: 8px; text-align: left; border-radius: 4px; }.ga-date-presets button:hover,.ga-date-presets button.selected { background: #e8f0fe; color: #0b57d0; }
 .ga-date-inputs { display: flex; gap: 10px; }.ga-date-inputs input { width: 145px; }.ga-compare-period { display: flex !important; align-items: center; gap: 9px; }.ga-compare-period input { width: auto; margin: 0; }
 .ga-dimension-pop { display: flex; flex-direction: column; gap: 2px; }.ga-dimension-pop button { text-align: left; border: 0; background: transparent; padding: 8px; }.ga-dimension-pop button:hover { background: #e8f0fe; }
-.ga-modal-overlay,.ga-editor-overlay { position: fixed; inset: 0; z-index: 60; background: #20212466; }
+.ga-modal-overlay,.ga-editor-overlay { position: fixed; inset: 0; z-index: var(--layer-app-overlay); background: #20212466; }
 .ga-filter-dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: min(850px,90vw); padding: 0; }
 .ga-dialog-head,.ga-editor-top { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid #dadce0; }.ga-dialog-head h2,.ga-dialog-head h3 { margin: 0; font-size: 20px; }.ga-dialog-head button,.ga-editor-top button { border: 0; background: none; }
 .ga-dialog-body { padding: 20px 24px; }.ga-dialog-body p { color: #5f6368; }.ga-condition { display: grid; grid-template-columns: 1.5fr 1fr 1fr 30px; align-items: end; gap: 10px; margin: 12px 0; }.ga-condition button { border: 0; background: transparent; height: 35px; }.ga-add-condition { display: flex; align-items: center; border: 0; background: transparent; color: #1a73e8; margin-top: 15px; }.ga-dialog-actions { border-top: 1px solid #dadce0; padding: 16px 24px; }

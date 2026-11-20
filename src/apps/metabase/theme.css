@@ -1,4 +1,5 @@
 [data-app="metabase"] {
+  color-scheme: dark;
   /* META FULL PICTURE BP.png, pixels (0,0), (100,150), (440,310). */
   --mb-canvas: #051119;
   --mb-surface: #071722;

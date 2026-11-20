@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { caseById } from "../src/cases/registry";
 
 test("GA-01 can be diagnosed through the funnel device breakdown", async ({ page }) => {
   await page.goto("/ga4/explorar/embudo?case=GA-01");
@@ -15,7 +16,7 @@ test("GA-01 can be diagnosed through the funnel device breakdown", async ({ page
 });
 
 test("GA-02 traffic report compares periods and changes campaign dimension", async ({ page }) => {
-  await page.goto("/ga4/informes/adquisicion-trafico?case=GA-02");
+  await page.goto(caseById["GA-02"].startRoute);
   await page.locator(".ga-data-table tbody tr").first().waitFor({ timeout: 60000 });
   await expect(page.locator(".ga-data-table")).toContainText("vs anterior");
   await page.locator(".ga-primary-dimension select").selectOption("campaign");

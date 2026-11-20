@@ -14,6 +14,21 @@ const paths: Record<string, Move[]> = {
   "CL-03": [{ values: { browser: "Safari" } }, { path: "/clarity/mapas-termicos", values: { clickKind: "rage" } }, { path: "/clarity/panel", values: { behavior: "jsError" } }],
 };
 
+for (const definition of cases) test(`${definition.id} starts with exactly its declared URL filters`, async ({ page }) => {
+  await page.goto(`/casos/${definition.id}`);
+  const app = page.locator(`[data-app="${definition.app}"]`);
+  await expect(app).toBeVisible();
+  const route = new URL(definition.startRoute, page.url());
+  await expect.poll(async () => {
+    const raw = await app.getAttribute("data-filters");
+    if (!raw) return false;
+    const state = JSON.parse(raw) as Record<string, unknown>;
+    return Array.from(route.searchParams.entries()).every(([key, value]) => !(key in state) || String(state[key]) === value);
+  }).toBe(true);
+  const dock = page.getByRole("complementary", { name: `Misión ${definition.id}` });
+  for (const objective of definition.objectives.filter(item => item.kind === "action")) await expect(dock.locator(`[data-step-id="${objective.id}"]`)).toHaveAttribute("data-complete", "false");
+});
+
 for (const definition of cases) test(`${definition.id} completes every guided step on its investigation route`, async ({ page }) => {
   await page.goto(`/casos/${definition.id}`);
   const dock = page.getByRole("complementary", { name: `Misión ${definition.id}` });
@@ -22,6 +37,12 @@ for (const definition of cases) test(`${definition.id} completes every guided st
   const moves = [...paths[definition.id]];
   let nextStep = 0;
   for (const objective of definition.objectives) {
+    if (objective.kind === "acknowledge") {
+      await dock.locator(`[data-step-id="${objective.id}"]`).getByRole("button", { name: "Entendido" }).click();
+      await complete(objective.id);
+      nextStep++;
+      continue;
+    }
     if (await dock.locator(`[data-step-id="${objective.id}"]`).getAttribute("data-complete") === "true") { nextStep++; continue; }
     const move = moves.shift();
     expect(move, `Missing route for ${definition.id} step ${objective.id}`).toBeDefined();
@@ -70,7 +91,8 @@ test("MB-01 marks steps through Metabase filter controls", async ({ page }) => {
 test("GA-01 marks the device breakdown selected in Exploration", async ({ page }) => {
   await page.goto("/casos/GA-01");
   const dock = page.getByRole("complementary", { name: "Misión GA-01" });
-  await expect(dock.locator('[data-step-id="funnel"]')).toHaveAttribute("data-complete", "true");
+  await expect(dock.locator('[data-step-id="funnel"]')).toHaveAttribute("data-complete", "false");
+  await dock.locator('[data-step-id="funnel"]').getByRole("button", { name: "Entendido" }).click();
   await page.getByRole("combobox", { name: "Desglose del embudo" }).selectOption("device");
   await expect(dock.locator('[data-step-id="device"]')).toHaveAttribute("data-complete", "true");
 });
@@ -78,7 +100,8 @@ test("GA-01 marks the device breakdown selected in Exploration", async ({ page }
 test("CL-01 marks heatmap navigation and the failed-click filter", async ({ page }) => {
   await page.goto("/casos/CL-01");
   const dock = page.getByRole("complementary", { name: "Misión CL-01" });
-  await expect(dock.locator('[data-step-id="spot"]')).toHaveAttribute("data-complete", "true");
+  await expect(dock.locator('[data-step-id="spot"]')).toHaveAttribute("data-complete", "false");
+  await dock.locator('[data-step-id="spot"]').getByRole("button", { name: "Entendido" }).click();
   await page.getByRole("link", { name: "Mapas Térmicos" }).click();
   await expect(dock.locator('[data-step-id="map"]')).toHaveAttribute("data-complete", "true");
   await page.getByRole("combobox", { name: "Tipo de clics" }).selectOption("dead");
@@ -88,7 +111,8 @@ test("CL-01 marks heatmap navigation and the failed-click filter", async ({ page
 test("MB-02 and MB-03 accept their investigative filters", async ({ page }) => {
   await page.goto("/casos/MB-02");
   const dock2 = page.getByRole("complementary", { name: "Misión MB-02" });
-  await expect(dock2.locator('[data-step-id="sector"]')).toHaveAttribute("data-complete", "true");
+  await expect(dock2.locator('[data-step-id="sector"]')).toHaveAttribute("data-complete", "false");
+  await dock2.locator('[data-step-id="sector"]').getByRole("button", { name: "Entendido" }).click();
   await page.getByRole("button", { name: /^Agent Source/ }).click();
   await page.getByRole("checkbox", { name: "VIRTUAL" }).check();
   await expect(dock2.locator('[data-step-id="agent"]')).toHaveAttribute("data-complete", "true");
@@ -108,7 +132,8 @@ test("MB-02 and MB-03 accept their investigative filters", async ({ page }) => {
 test("GA-02 identifies the weak campaign through report controls", async ({ page }) => {
   await page.goto("/casos/GA-02");
   const dock = page.getByRole("complementary", { name: "Misión GA-02" });
-  await expect(dock.locator('[data-step-id="traffic"]')).toHaveAttribute("data-complete", "true");
+  await expect(dock.locator('[data-step-id="traffic"]')).toHaveAttribute("data-complete", "false");
+  await dock.locator('[data-step-id="traffic"]').getByRole("button", { name: "Entendido" }).click();
   await page.locator(".ga-primary-dimension select").selectOption("campaign");
   await expect(dock.locator('[data-step-id="campaign"]')).toHaveAttribute("data-complete", "true");
   await page.getByRole("button", { name: "Añadir filtro" }).click();
@@ -142,7 +167,8 @@ test("GA-03 follows event detail, browser and operating-system filters", async (
 test("CL-02 compares scroll and CL-03 connects Safari to JavaScript errors", async ({ page }) => {
   await page.goto("/casos/CL-02");
   const dock2 = page.getByRole("complementary", { name: "Misión CL-02" });
-  await expect(dock2.locator('[data-step-id="desktop"]')).toHaveAttribute("data-complete", "true");
+  await expect(dock2.locator('[data-step-id="desktop"]')).toHaveAttribute("data-complete", "false");
+  await dock2.locator('[data-step-id="desktop"]').getByRole("button", { name: "Entendido" }).click();
   await page.getByRole("link", { name: "Mapas Térmicos" }).click();
   await page.getByRole("button", { name: "Desplazamiento" }).click();
   await expect(dock2.locator('[data-step-id="scroll"]')).toHaveAttribute("data-complete", "true");
@@ -173,7 +199,7 @@ test("catalog filters, hint penalty and collapse survive navigation", async ({ p
   await expect(page.locator(".cases-card")).toHaveCount(1);
   await page.locator('[data-case-id="CL-01"]').click();
   const dock = page.getByRole("complementary", { name: "Misión CL-01" });
-  await expect(dock.locator('[data-step-id="spot"]')).toHaveAttribute("data-complete", "true");
+  await expect(dock.locator('[data-step-id="spot"]')).toHaveAttribute("data-complete", "false");
   await dock.getByRole("button", { name: /Mostrar pista/ }).click();
   await expect(dock).toContainText("Empieza en Ideas");
   await page.getByRole("button", { name: "Contraer misión" }).click();

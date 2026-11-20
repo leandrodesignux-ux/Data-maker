@@ -29,7 +29,7 @@
 .ga-funnel-stage-labels { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; padding: 0 28px 8px 50px; }
 .ga-funnel-stage-labels div { font-size: 11px; display: flex; flex-direction: column; gap: 4px; }.ga-funnel-stage-labels strong { font-weight: 500; }.ga-funnel-stage-labels span { color: #5f6368; }
 .ga-funnel-table { margin-top: 16px; overflow-x: auto; }.ga-funnel-table .ga-card-heading { margin-bottom: 18px; }.ga-funnel-table th { font-size: 12px; font-weight: 500; color: #5f6368; }.ga-funnel-table td:first-child,.ga-funnel-table th:first-child { text-align: left; }.ga-funnel-table td i { width: 9px; height: 9px; display: inline-block; border-radius: 50%; margin-right: 7px; }
-.ga-editor-overlay { z-index: 100; display: flex; justify-content: flex-end; }
+.ga-editor-overlay { z-index: var(--layer-app-dialog); display: flex; justify-content: flex-end; }
 .ga-editor { background: white; width: min(1515px,calc(100vw - 150px)); height: 100vh; display: flex; flex-direction: column; box-shadow: -8px 0 30px #2021242b; }
 .ga-editor-top { flex: 0 0 68px; }.ga-editor-top h2 { font-size: 20px; font-weight: 400; margin: 0; }
 .ga-editor-body { display: grid; grid-template-columns: minmax(500px,1fr) 340px; min-height: 0; flex: 1; }
@@ -42,3 +42,7 @@
 .ga-add-step { display: flex; align-items: center; gap: 7px; color: #1a73e8; border: 1px dashed #9aa0a6; border-radius: 4px; background: #fff; padding: 10px; }
 .ga-editor-summary { border-left: 1px solid #dadce0; padding: 22px; }.ga-editor-summary h3 { font-size: 16px; font-weight: 500; }.ga-editor-summary div { display: grid; grid-template-columns: 24px 1fr; gap: 2px 8px; margin: 20px 0; }.ga-editor-summary div span { grid-row: span 2; display: grid; place-items: center; width: 22px; height: 22px; background: #e8f0fe; color: #1a73e8; border-radius: 50%; }.ga-editor-summary div strong { font-weight: 500; }.ga-editor-summary div small { color: #5f6368; }
 .ga-editor-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 15px 28px; border-top: 1px solid #dadce0; }.ga-editor-actions button:disabled { opacity: .4; }
+.ga-active-filters { display: flex; flex-wrap: wrap; gap: 5px; margin: 7px 0 12px; }
+.ga-filter-chip { display: inline-flex; align-items: center; max-width: 100%; gap: 4px; border: 1px solid #c6d9f4; border-radius: 5px; padding: 4px 6px; background: #e8f0fe; color: #174ea6; font-size: 11px; overflow-wrap: anywhere; }
+.ga-filter-chip button { display: grid; place-items: center; flex: none; border: 0; background: transparent; color: inherit; padding: 0; }
+.ga-filter-empty { color: #80868b; font-size: 11px; }

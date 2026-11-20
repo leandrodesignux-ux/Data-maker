@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { createBaseDataset, DEFAULT_SEED, generateDataset } from "../src/data/generator";
+import { createBaseDataset, DEFAULT_SEED, generateDataset, isBounce } from "../src/data/generator";
 import type { Dataset } from "../src/data/model";
 import { hash32 } from "../src/data/prng";
 import { aggregateBy, attentionDistribution, comparePeriods, cvrMetrics, eventFunnel, heatmapByElement, replayScript, scrollDistribution, timeSeries } from "../src/data/queries";
@@ -43,6 +43,16 @@ describe("deterministic shared universe", () => {
     for (const value of windows) expect(value / meanCvr).toBeGreaterThan(0.65);
     for (const value of windows) expect(value / meanCvr).toBeLessThan(1.35);
     expect(base.sessions.every(s => s.events[0]?.name === "session_start" && s.pageviews[0]?.path === s.landingPage)).toBe(true);
+    for (const device of ["desktop", "mobile"] as const) {
+      const browse = base.sessions.filter(s => !s.isBot && s.entryPoint === "Browse Page" && s.device === device);
+      const bounce = browse.filter(isBounce).length / browse.length;
+      expect(bounce).toBeGreaterThan(0.35);
+      expect(bounce).toBeLessThan(0.50);
+      const spot = base.sessions.filter(s => !s.isBot && s.device === device);
+      const fullScroll = spot.filter(s => s.scrollDepthPct === 100).length / spot.length;
+      expect(fullScroll).toBeGreaterThan(device === "desktop" ? 0.05 : 0.10);
+      expect(fullScroll).toBeLessThan(device === "desktop" ? 0.12 : 0.20);
+    }
   });
 
   it("keeps each scenario's writes in its own cohort", () => {
