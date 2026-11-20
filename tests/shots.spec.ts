@@ -49,3 +49,16 @@ for (const [name, route] of routes) {
     if (name === "metabase") { await page.getByRole("heading", { name: "Pipeline", exact: true }).scrollIntoViewIfNeeded(); await page.screenshot({ path: join(process.cwd(), "tests", "__shots__", "metabase-pipeline.png") }); }
   });
 }
+
+for (const viewport of [1440, 1920]) for (const device of ["desktop", "tablet", "mobile"] as const) for (const mode of ["click", "scroll"] as const) for (const compare of [false, true]) {
+  test(`capture clarity ${viewport} ${device} ${mode} ${compare ? "compare" : "single"}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport, height: viewport === 1440 ? 900 : 1080 });
+    const query = new URLSearchParams({ page: "/spots/espacio-demo-azul", url: "/spots/", sector: "Oficinas", device, mode, compare: String(compare), compareDevice: device === "mobile" ? "desktop" : "mobile" });
+    await page.goto(`/clarity/mapas-termicos?${query}`);
+    await expect(page.locator(".cl-map-pane")).toHaveCount(compare ? 2 : 1);
+    await expect.poll(async () => page.locator(".cl-heat-overlay").first().evaluate(canvas => (canvas as HTMLCanvasElement).width)).toBeGreaterThan(0);
+    await page.waitForTimeout(180);
+    await mkdir(join(process.cwd(), "tests", "__shots__"), { recursive: true });
+    await page.screenshot({ path: join(process.cwd(), "tests", "__shots__", `clarity-${viewport}-${device}-${mode}-${compare ? "compare" : "single"}.png`) });
+  });
+}

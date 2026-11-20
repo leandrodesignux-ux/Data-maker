@@ -42,26 +42,36 @@ export function HeatOverlay({ pageRef, elements, mode, reach, mean, hovered, onH
       for (const [nodeIndex, node] of nodes.entries()) {
         const rect = node.getBoundingClientRect(), parent = page.getBoundingClientRect();
         const factor = parent.width / Math.max(1, page.offsetWidth);
-        const x = (rect.left - parent.left + rect.width / 2) / factor, y = (rect.top - parent.top + rect.height / 2) / factor;
-        if (nodeIndex === 0 && index < 12) points.push({ elementId: element.elementId, x, y, rank: index + 1 });
-        const radius = Math.max(35, Math.min(100, Math.max(rect.width, rect.height) / factor * .26));
+        const markerX = (rect.left - parent.left + rect.width / 2) / factor, markerY = (rect.top - parent.top + rect.height / 2) / factor;
+        if (nodeIndex === 0 && index < 12) points.push({ elementId: element.elementId, x: markerX, y: markerY, rank: index + 1 });
+        const left = (rect.left - parent.left) / factor, top = (rect.top - parent.top) / factor;
+        const width = rect.width / factor, height = rect.height / factor;
+        const radius = Math.max(14, Math.min(60, Math.min(width, height) * .35));
+        const offsets = element.offsets.length ? element.offsets : [{ x: .5, y: .5 }];
+        const average = offsets.reduce((sum, point) => ({ x: sum.x + point.x, y: sum.y + point.y }), { x: 0, y: 0 });
+        const x = left + width * Math.max(0, Math.min(1, average.x / offsets.length));
+        const y = top + height * Math.max(0, Math.min(1, average.y / offsets.length));
         const intensity = Math.min(.92, .16 + .76 * Math.sqrt(element.clicks / maxClicks) / Math.sqrt(nodes.length));
+        alpha.save();
+        alpha.beginPath();
+        alpha.rect(left, top, width, height);
+        alpha.clip();
         for (const [dx, dy, scale] of [[0, 0, 1], [-radius * .45, radius * .15, .4], [radius * .38, -radius * .2, .34]] as const) {
           const radial = alpha.createRadialGradient(x + dx, y + dy, 2, x + dx, y + dy, radius * scale);
           radial.addColorStop(0, `rgba(0,0,0,${intensity * scale})`); radial.addColorStop(.43, `rgba(0,0,0,${intensity * scale * .5})`); radial.addColorStop(1, "rgba(0,0,0,0)");
           alpha.fillStyle = radial; alpha.fillRect(x + dx - radius, y + dy - radius, radius * 2, radius * 2);
         }
-        const left = (rect.left - parent.left) / factor, top = (rect.top - parent.top) / factor;
-        const width = rect.width / factor, height = rect.height / factor;
         const samples = Math.min(55, Math.max(7, Math.round(element.clicks / 9 / Math.sqrt(nodes.length))));
         for (let sample = 0; sample < samples; sample++) {
           const seed = hash32(`${element.elementId}:${nodeIndex}:${sample}`);
-          const sx = left + width * (.07 + (seed % 997) / 997 * .86);
-          const sy = top + height * (.08 + ((seed >>> 11) % 991) / 991 * .84);
-          const dotRadius = 16 + (seed % 17), dot = alpha.createRadialGradient(sx, sy, 1, sx, sy, dotRadius);
+          const offset = offsets[sample % offsets.length];
+          const sx = left + width * Math.max(.03, Math.min(.97, offset.x + ((seed % 997) / 997 - .5) * .16));
+          const sy = top + height * Math.max(.03, Math.min(.97, offset.y + (((seed >>> 11) % 991) / 991 - .5) * .16));
+          const dotRadius = Math.max(4, Math.min(radius * .45, 8 + seed % 13)), dot = alpha.createRadialGradient(sx, sy, 1, sx, sy, dotRadius);
           dot.addColorStop(0, "rgba(0,0,0,.24)"); dot.addColorStop(1, "rgba(0,0,0,0)");
           alpha.fillStyle = dot; alpha.fillRect(sx - dotRadius, sy - dotRadius, dotRadius * 2, dotRadius * 2);
         }
+        alpha.restore();
       }
     }
     const pixels = alpha.getImageData(0, 0, size.width, size.height), output = context.createImageData(size.width, size.height);

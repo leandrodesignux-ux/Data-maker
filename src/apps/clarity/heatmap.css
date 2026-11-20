@@ -28,3 +28,30 @@
 .cl-site-listing,.cl-site-home-content { padding: 30px 5%; }.cl-site-listing h1 { font-size: 31px; }.cl-site-search-line { display: flex; align-items: center; gap: 8px; padding: 18px 0; }.cl-site-search-line>div,.cl-site-search-line>span { border: 1px solid #d7deea; border-radius: 6px; padding: 13px; display: flex; align-items: center; gap: 6px; }.cl-site-search-line>div:first-child { flex: 1; color: #8b97a9; }.cl-site-listing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }.cl-site-listing-card { border: 1px solid #e2e5ee; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding-bottom: 15px; }.cl-site-listing-card>div { height: 180px; }.cl-site-listing-card>small,.cl-site-listing-card>strong,.cl-site-listing-card>span { margin-inline: 12px; }.cl-site-listing-card>small { color: #7b8795; }.cl-site-listing-card>span { color: #065b91; }
 .cl-site-home-hero { height: 410px; background: linear-gradient(115deg,#ddeaf1,#c0dbe5); padding: 90px 9%; }.cl-site-home-hero h1 { font-size: 42px; max-width: 630px; margin: 12px 0; }.cl-site-home-hero p { max-width: 600px; line-height: 1.6; }.cl-site-home-search { margin-top: 28px; display: flex; align-items: center; gap: 10px; max-width: 660px; border-radius: 8px; padding: 10px 10px 10px 18px; background: #fff; box-shadow: 0 3px 10px #09295020; color: #7d8b9c; }.cl-site-home-search span { margin-left: auto; background: #f69b00; color: white; padding: 10px 18px; border-radius: 6px; }.cl-site-home-content h2 { font-size: 23px; }.cl-site-home-content>div:not(.cl-site-listing-grid) { display: flex; gap: 18px; margin-bottom: 35px; }.cl-site-home-content>div:not(.cl-site-listing-grid)>div { flex: 1; border: 1px solid #dce5f6; padding: 25px; display: flex; flex-direction: column; gap: 12px; border-radius: 8px; }
 .cl-sim-page.is-mobile { font-size: 12px; }.cl-sim-page.is-mobile .cl-site-header { padding: 0 14px; }.cl-sim-page.is-mobile .cl-site-links,.cl-sim-page.is-mobile .cl-site-actions { display: none; }.cl-sim-page.is-mobile .cl-site-title h1 { font-size: 21px; }.cl-sim-page.is-mobile .cl-site-spot-grid { display: block; }.cl-sim-page.is-mobile .cl-site-hero { height: 220px; }.cl-sim-page.is-mobile .cl-site-thumbs { height: 90px; }.cl-sim-page.is-mobile .cl-site-contact { margin-top: 16px; }.cl-sim-page.is-mobile .cl-site-home-hero { height: 340px; padding: 55px 8%; }.cl-sim-page.is-mobile .cl-site-home-hero h1 { font-size: 27px; }.cl-sim-page.is-mobile .cl-site-listing-grid { grid-template-columns: 1fr; }.cl-sim-page.is-mobile .cl-site-listing-card>div { height: 150px; }.cl-sim-page.is-mobile .cl-site-home-content>div:not(.cl-site-listing-grid) { display: block; }
+
+/* Each capture owns its width and clips horizontal overflow independently. */
+.cl-map-scroll { overflow-x: hidden; overflow-y: auto; min-width: 0; }
+.cl-map-viewport { min-width: 0; }
+.cl-page-host { margin-inline: auto; }
+.cl-sim-page { overflow-x: clip; }
+.cl-scroll-reach { padding-bottom: 10px; scrollbar-width: thin; }
+.cl-scroll-reach>div { padding: 10px 8px; }
+.cl-scroll-mean { padding: 12px 8px; }
+
+.cl-site-compact-actions { display: none; }
+.cl-sim-page.is-tablet .cl-site-header,.cl-sim-page.is-mobile .cl-site-header { justify-content: space-between; gap: 12px; padding-inline: 20px; }
+.cl-sim-page.is-tablet .cl-site-links,.cl-sim-page.is-tablet .cl-site-actions { display: none; }
+.cl-sim-page.is-tablet .cl-site-compact-actions,.cl-sim-page.is-mobile .cl-site-compact-actions { display: flex; align-items: center; gap: 15px; color: #3a475d; }
+.cl-sim-page.is-tablet .cl-site-compact-actions b { border: 1px solid #f69b00; color: #f69b00; border-radius: 20px; padding: 7px 13px; font-size: 12px; font-weight: 500; }
+.cl-sim-page.is-tablet .cl-site-title h1 { font-size: 25px; }
+.cl-sim-page.is-tablet .cl-site-spot-grid { display: block; }
+.cl-sim-page.is-tablet .cl-site-hero { height: 360px; }
+.cl-sim-page.is-tablet .cl-site-thumbs { height: 150px; }
+.cl-sim-page.is-tablet .cl-site-contact { margin-top: 20px; }
+.cl-sim-page.is-tablet .cl-site-listing-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.cl-sim-page.is-mobile .cl-site-brand { font-size: 21px; }
+.cl-sim-page.is-mobile .cl-site-compact-actions b { display: none; }
+.cl-sim-page.is-mobile .cl-site-amenities { flex-wrap: wrap; }
+.cl-sim-page.is-mobile .cl-site-title { display: block; }
+.cl-sim-page.is-mobile .cl-site-title h1 { overflow-wrap: anywhere; }
+.cl-sim-page.is-mobile .cl-site-share { justify-content: flex-end; margin-top: 8px; }

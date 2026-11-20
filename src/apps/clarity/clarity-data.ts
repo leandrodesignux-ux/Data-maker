@@ -72,15 +72,16 @@ export function clSessions(dataset: Dataset, filters: ClFilters, comparison = fa
 export function clPageSessions(dataset: Dataset, filters: ClFilters, comparison = false): readonly Session[] {
   return memo(dataset, `page-sessions:${JSON.stringify(filters)}:${comparison}`, () => clSessions(dataset, filters, comparison).filter(s => s.pageviews.some(view => view.path === filters.page)));
 }
-export type ClHeatElement = { elementId: string; selector: string; clicks: number; share: number; deadClicks: number; rageClicks: number };
+export type ClHeatElement = { elementId: string; selector: string; clicks: number; share: number; deadClicks: number; rageClicks: number; offsets: { x: number; y: number }[] };
 export function clHeatElements(dataset: Dataset, filters: ClFilters, comparison = false): readonly ClHeatElement[] {
   return memo(dataset, `heat:${JSON.stringify(filters)}:${comparison}`, () => {
     const groups = new Map<string, Omit<ClHeatElement, "elementId" | "share">>();
     for (const s of clPageSessions(dataset, filters, comparison)) for (const i of s.interactions) {
       if (i.page !== filters.page || i.kind === "scroll" || i.kind === "error") continue;
       if (filters.clickKind === "dead" && i.kind !== "deadClick" || filters.clickKind === "rage" && i.kind !== "rageClick") continue;
-      const row = groups.get(i.elementId) ?? { selector: i.selector, clicks: 0, deadClicks: 0, rageClicks: 0 };
+      const row = groups.get(i.elementId) ?? { selector: i.selector, clicks: 0, deadClicks: 0, rageClicks: 0, offsets: [] };
       row.clicks++; if (i.kind === "deadClick") row.deadClicks++; if (i.kind === "rageClick") row.rageClicks++;
+      if (row.offsets.length < 64) row.offsets.push({ x: i.xPct, y: i.yPct });
       groups.set(i.elementId, row);
     }
     const total = [...groups.values()].reduce((sum, row) => sum + row.clicks, 0);

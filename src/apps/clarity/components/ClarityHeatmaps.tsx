@@ -1,7 +1,7 @@
 "use client";
 import { Unavailable } from "@/components/shared/Unavailable";
 import { useAppPortalContainer } from "@/components/shared/AppPortalContainer";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import * as Popover from "@radix-ui/react-popover";
 import { ArrowLeftRight, Camera, ChevronDown, Download, Flame, Info, Monitor, MousePointer2, Share2, Smartphone, Tablet, Video } from "lucide-react";
@@ -18,26 +18,32 @@ function RecordingDisabled() { return <Unavailable><button className="cl-recordi
 function MapPane({ dataset, filters, comparison, hovered, setHovered, onCanvas }: {
   dataset: Dataset; filters: ClFilters; comparison: boolean; hovered: string; setHovered: (id: string) => void; onCanvas: (canvas: HTMLCanvasElement | null) => void;
 }) {
-  const viewportRef = useRef<HTMLDivElement>(null), pageRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null), scrollRef = useRef<HTMLDivElement>(null), pageRef = useRef<HTMLDivElement>(null);
+  const scrollFraction = useRef(0);
   const [viewportWidth, setViewportWidth] = useState(1400), [pageHeight, setPageHeight] = useState(1600), [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
   const device = (comparison ? filters.compareDevice : filters.device) || "desktop", pageWidth = deviceWidths[device];
   const elements = useMemo(() => clHeatElements(dataset, filters, comparison), [dataset, filters, comparison]);
   const scroll = useMemo(() => clScroll(dataset, filters, comparison), [dataset, filters, comparison]);
-  const scale = Math.min(1, viewportWidth / pageWidth);
+  const scale = Math.min(1, Math.max(0, viewportWidth) / pageWidth);
   useEffect(() => {
     const viewport = viewportRef.current, page = pageRef.current; if (!viewport || !page) return;
     const observer = new ResizeObserver(() => { setViewportWidth(viewport.clientWidth); setPageHeight(page.offsetHeight); });
     observer.observe(viewport); observer.observe(page); setViewportWidth(viewport.clientWidth); setPageHeight(page.offsetHeight);
     return () => observer.disconnect();
   }, [device, filters.page, filters.sector]);
+  useLayoutEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    container.scrollTop = scrollFraction.current * Math.max(0, container.scrollHeight - container.clientHeight);
+  }, [device, scale, pageHeight]);
   const onMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const element = (event.target as HTMLElement).closest<HTMLElement>("[data-heat-id]");
     if (filters.mode === "click") { if (element) setHovered(element.dataset.heatId || ""); else if (hovered) setHovered(""); return; }
     const rect = pageRef.current?.getBoundingClientRect(); if (!rect) return;
     const depth = Math.max(0, Math.min(100, (event.clientY - rect.top) / rect.height * 100));
-    setTooltip({ x: event.clientX - rect.left + 10, y: event.clientY - rect.top + 10, text: `${Math.round(depth)} % de la página · ${clPercent(scroll.reach(depth))} de usuarios` });
+    setTooltip({ x: Math.min(pageWidth - 210, Math.max(0, (event.clientX - rect.left) / scale + 10)), y: Math.max(0, (event.clientY - rect.top) / scale + 10), text: `${Math.round(depth)} % de la página · ${clPercent(scroll.reach(depth))} de usuarios` });
   };
-  return <div className="cl-map-pane"><div className="cl-pane-label">{comparison ? "Comparación" : "Principal"} · {deviceLabels[device]} · {clRangeLabel(filters, comparison)} · alcance al 75 %: {clPercent(scroll.reach(75))}</div><div className="cl-map-scroll"><div className="cl-map-viewport" ref={viewportRef}><div className="cl-page-host" style={{ height: pageHeight * scale }}><div className="cl-page-render" ref={pageRef} style={{ width: pageWidth, transform: `scale(${scale})` }} onMouseMove={onMove} onMouseLeave={() => { setTooltip(null); setHovered(""); }}><SimulatedPage page={filters.page} device={device} sector={filters.sector}/><HeatOverlay pageRef={pageRef} elements={elements} mode={filters.mode} reach={scroll.reach} mean={scroll.mean} hovered={hovered} onHover={setHovered} onCanvas={onCanvas}/>{tooltip && filters.mode === "scroll" && <div className="cl-scroll-tooltip" style={{ left: tooltip.x / scale, top: tooltip.y / scale }}>{tooltip.text}</div>}</div></div></div></div></div>;
+  return <div className="cl-map-pane" data-device={device}><div className="cl-pane-label">{comparison ? "Comparación" : "Principal"} · {deviceLabels[device]} · {clRangeLabel(filters, comparison)} · alcance al 75 %: {clPercent(scroll.reach(75))}</div><div className="cl-map-scroll" ref={scrollRef} onScroll={event => { const node = event.currentTarget; const max = node.scrollHeight - node.clientHeight; if (max > 0) scrollFraction.current = node.scrollTop / max; }}><div className="cl-map-viewport" ref={viewportRef}><div className="cl-page-host" data-scale={scale} style={{ width: pageWidth * scale, height: pageHeight * scale }}><div className="cl-page-render" ref={pageRef} style={{ width: pageWidth, transform: `scale(${scale})` }} onMouseMove={onMove} onMouseLeave={() => { setTooltip(null); setHovered(""); }}><SimulatedPage page={filters.page} device={device} sector={filters.sector}/><HeatOverlay pageRef={pageRef} elements={elements} mode={filters.mode} reach={scroll.reach} mean={scroll.mean} hovered={hovered} onHover={setHovered} onCanvas={onCanvas}/>{tooltip && filters.mode === "scroll" && <div className="cl-scroll-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>{tooltip.text}</div>}</div></div></div></div></div>;
 }
 export function ClarityHeatmaps({ dataset, filters, update }: { dataset: Dataset; filters: ClFilters; update: (patch: Partial<ClFilters>) => void }) {
   const portalContainer = useAppPortalContainer();

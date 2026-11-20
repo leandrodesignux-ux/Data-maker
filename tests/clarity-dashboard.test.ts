@@ -15,6 +15,8 @@ describe("Clarity panel and heatmap discoveries", () => {
     expect(deadRate).toBeGreaterThan(.08);
     expect(dead.some(row => row.elementId === "gallery-main")).toBe(true);
     expect(dead.some(row => row.elementId === "gallery-thumbnail")).toBe(true);
+    const original = sessions.flatMap(session => session.interactions).find(item => item.page === PAGES.spot && item.kind === "deadClick" && item.elementId === "gallery-main");
+    expect(dead.find(row => row.elementId === "gallery-main")?.offsets[0]).toEqual({ x: original?.xPct, y: original?.yPct });
   });
   it("CL-02 compares desktop and mobile reach at the contact panel", () => {
     const filters: ClFilters = { ...defaultClFilters, datePreset: "30d", page: PAGES.spot, url: "/spots/", sector: "Oficinas", channel: "Organic Search", device: "desktop", compareDevice: "mobile" };
