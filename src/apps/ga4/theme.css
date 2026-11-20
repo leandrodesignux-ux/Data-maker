@@ -13,3 +13,8 @@
   background: var(--ga-nav);
   font-family: var(--font-roboto), Arial, sans-serif;
 }
+
+[data-app="ga4"] [data-unavailable], [data-app="ga4"] [data-unavailable]:hover, [data-app="ga4"] [data-unavailable]:active { opacity: .45 !important; cursor: not-allowed !important; color: var(--ga-muted); }
+[data-app="ga4"] .ga-side-item[data-unavailable]:hover { background: transparent !important; }
+[data-app="ga4"] .unavailable-tooltip { background: var(--ga-text); color: var(--ga-surface); border-radius: 4px; padding: 7px 10px; font-size: 12px; z-index: 1000; }
+[data-app="ga4"] .unavailable-tooltip-arrow { fill: var(--ga-text); }

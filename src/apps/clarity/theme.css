@@ -22,3 +22,8 @@
   background: var(--cl-canvas);
   font-family: "Segoe UI", "Selawik", system-ui, sans-serif;
 }
+
+[data-app="clarity"] [data-unavailable], [data-app="clarity"] [data-unavailable]:hover, [data-app="clarity"] [data-unavailable]:active { opacity: .45 !important; cursor: not-allowed !important; color: var(--cl-muted); }
+[data-app="clarity"] .cl-empty-card [data-unavailable] { border-color: var(--cl-border); }
+[data-app="clarity"] .unavailable-tooltip { background: var(--cl-navy); color: var(--cl-surface); border-radius: 5px; padding: 7px 10px; font-size: 12px; z-index: 1000; }
+[data-app="clarity"] .unavailable-tooltip-arrow { fill: var(--cl-navy); }

@@ -11,6 +11,7 @@ import { AppSwitcher } from "@/components/shared/AppSwitcher";
 import { SimulatorBadge } from "@/components/shared/SimulatorBadge";
 import { CaseDock } from "@/components/shared/CaseDock";
 import { AppPortalContainer } from "@/components/shared/AppPortalContainer";
+import { Unavailable } from "@/components/shared/Unavailable";
 import { ClarityControls } from "./ClarityControls";
 import { ClarityPanel } from "./ClarityPanel";
 import { ClarityHeatmaps } from "./ClarityHeatmaps";
@@ -26,7 +27,7 @@ const parsers = {
   page: parseAsString.withDefault(PAGES.spot), mode: parseAsString.withDefault("click"), clickKind: parseAsString.withDefault("all"), compare: parseAsBoolean.withDefault(false),
   compareDevice: parseAsString.withDefault("mobile"), compareDatePreset: parseAsString.withDefault("7d"), compareFrom: parseAsString.withDefault(""), compareTo: parseAsString.withDefault(""), compareBrowser: parseAsString.withDefault(""), compareBehavior: parseAsString.withDefault(""),
 };
-function DisabledNav({ label, Icon }: { label: string; Icon: typeof Video }) { return <span title="No disponible en el simulador"><button disabled><Icon size={18}/>{label}</button></span>; }
+function DisabledNav({ label, Icon }: { label: string; Icon: typeof Video }) { return <Unavailable><button><Icon size={18}/>{label}</button></Unavailable>; }
 export function ClarityChrome() {
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
   const path = usePathname(), params = useSearchParams(), heatmap = path.includes("mapas-termicos"), recordings = path.includes("grabaciones");
@@ -41,8 +42,8 @@ export function ClarityChrome() {
   useEffect(() => { getClientDataset().then(setDataset).catch(e => setError(String(e))); }, []);
   useEffect(() => { setFilters(filters); }, [filters, setFilters]);
   const currentHref = (target: string) => `${target}?${params.toString()}`;
-  return <div data-app="clarity" className="cl-app" data-filters={JSON.stringify(filters)} ref={setPortalContainer}><AppPortalContainer container={portalContainer}><header className="cl-header"><div className="cl-brand"><span className="cl-ms-mark"><i/><i/><i/><i/></span><span>Microsoft</span><strong>Clarity</strong><button title="Proyecto de entrenamiento">Marketplace Demo ▾</button></div><nav className="cl-topnav" aria-label="Navegación de Clarity"><Link href={currentHref("/clarity/panel")} className={!heatmap && !recordings ? "active" : ""}><LayoutDashboard size={18}/>Panel</Link><DisabledNav label="Grabaciones" Icon={Video}/><Link href={currentHref("/clarity/mapas-termicos")} className={heatmap ? "active" : ""}><Flame size={18}/>Mapas Térmicos</Link><DisabledNav label="Configuración" Icon={Settings}/></nav><div className="cl-header-end"><button title="No disponible en el simulador"><CircleHelp size={18}/></button><span>D</span></div></header>
-    {!heatmap && <div className="cl-subnav"><button className="active">Información general</button><span title="No disponible en el simulador"><button disabled>Google Analytics</button></span><span title="No disponible en el simulador"><button disabled>Visibilidad de AI</button></span></div>}
+  return <div data-app="clarity" className="cl-app" data-filters={JSON.stringify(filters)} ref={setPortalContainer}><AppPortalContainer container={portalContainer}><header className="cl-header"><div className="cl-brand"><span className="cl-ms-mark"><i/><i/><i/><i/></span><span>Microsoft</span><strong>Clarity</strong><Unavailable><button>Marketplace Demo ▾</button></Unavailable></div><nav className="cl-topnav" aria-label="Navegación de Clarity"><Link href={currentHref("/clarity/panel")} className={!heatmap && !recordings ? "active" : ""}><LayoutDashboard size={18}/>Panel</Link><DisabledNav label="Grabaciones" Icon={Video}/><Link href={currentHref("/clarity/mapas-termicos")} className={heatmap ? "active" : ""}><Flame size={18}/>Mapas Térmicos</Link><DisabledNav label="Configuración" Icon={Settings}/></nav><div className="cl-header-end"><Unavailable><button aria-label="Ayuda"><CircleHelp size={18}/></button></Unavailable><span>D</span></div></header>
+    {!heatmap && <div className="cl-subnav"><button className="active">Información general</button><Unavailable><button>Google Analytics</button></Unavailable><Unavailable><button>Visibilidad de AI</button></Unavailable></div>}
     <ClarityControls filters={filters} update={update}/>
     <main className={heatmap ? "cl-main cl-main-heat" : "cl-main"}>{error ? <div className="cl-error">{error}</div> : !dataset ? <div className="cl-skeleton"/> : <div className={loading ? "cl-loading" : ""}>{heatmap ? <ClarityHeatmaps dataset={dataset} filters={filters} update={update}/> : recordings ? <div className="cl-unavailable">No disponible en el simulador</div> : <ClarityPanel dataset={dataset} filters={filters}/>}</div>}</main><CaseDock/><AppSwitcher/><SimulatorBadge/>
   </AppPortalContainer></div>;

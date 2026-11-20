@@ -14,3 +14,7 @@
   background: var(--mb-canvas);
   font-family: var(--font-lato), Arial, sans-serif;
 }
+
+[data-app="metabase"] [data-unavailable], [data-app="metabase"] [data-unavailable]:hover, [data-app="metabase"] [data-unavailable]:active { opacity: .45 !important; cursor: not-allowed !important; color: var(--mb-muted); }
+[data-app="metabase"] .unavailable-tooltip { background: var(--mb-border); color: var(--mb-text); border-radius: 5px; padding: 7px 10px; font-size: 12px; z-index: 1000; }
+[data-app="metabase"] .unavailable-tooltip-arrow { fill: var(--mb-border); }
